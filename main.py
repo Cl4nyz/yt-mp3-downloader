@@ -31,8 +31,11 @@ def final_message(name, playlist=False):
         print('=', end='')
 
 def mp4_download(yt, path):
-    stream = yt.streams.get_audio_only()
-    stream.download(path)
+    mp4_file = yt.streams.get_audio_only()
+    downloaded_mp4 = mp4_file.download(path)
+    base, ext = os.path.splitext(downloaded_mp4)
+    mp3_file = base + '.mp3'
+    os.rename(downloaded_mp4, mp3_file)
 
 def main():
     url = input("Insira um link para um vídeo ou playlist: ")
@@ -43,9 +46,11 @@ def main():
         p = Playlist(url)
         path = generate_path(True, p.title)
         i = 0
-        for video in p.videos:
+        first_song = 8
+        last_song = p.length
+        for video in p.videos[first_song-1:last_song]:
             i+=1
-            status_bar(i, p.length)
+            status_bar(i, last_song - (first_song-1))
             mp4_download(video, path)
         final_message(p.title, True)
     else:
